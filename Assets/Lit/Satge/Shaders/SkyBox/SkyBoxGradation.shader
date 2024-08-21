@@ -53,27 +53,36 @@ Shader "Custom/SkyBox/Gradation"
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
             }
+            
+            float Lit(float u)
+            {
+                u = frac(u);
+                float time = _Time.y;
+                return smoothstep(frac(time),frac(time + 0.1),u) * step(u,frac(time + 0.1)) * sign(_Threshold - _Slider);
+            }
 
             float4 frag (v2f i) : SV_Target
             {
                 // 0~1 に正規化
+                float u = (i.uv.x + 1) * 0.5;
                 float v = (i.uv.y + 1) * 0.5;
 
                 // Slider の値に応じて色を決定
-                float4 col = smoothstep(_Threshold - _ChangeWidth , _Threshold + _ChangeWidth, _Slider);
+                float4 col = smoothstep(_Threshold - _ChangeWidth , _Threshold + _ChangeWidth, _Slider * (1 + _ChangeWidth));
                 col.a = 1.0;
                 
                 // 線を走らせる
                 float f = i.uv.x * 2 + i.uv.y;
-                col += (1 - 2 * col) * smoothstep(0.4,0.4 + _LineWidth , f) * step(f,0.4 + _LineWidth);
+                float diff = 2;
+                col += (1 - diff * col + Lit(u)) * smoothstep(0.4,0.4 + _LineWidth , f) * step(f,0.4 + _LineWidth);
                 f = -i.uv.x * 2 + i.uv.y - 1;
-                col += (1 - 2 * col) * smoothstep(0.4,0.4 + _LineWidth , f) * step(f,0.4 + _LineWidth);
+                col += (1 - diff * col + Lit(u)) * smoothstep(0.4,0.4 + _LineWidth , f) * step(f,0.4 + _LineWidth);
                 f = i.uv.x * 0.3 + i.uv.y;
-                col += (1 - 2 * col) * smoothstep(0.4,0.4 + _LineWidth , f) * step(f,0.4 + _LineWidth);
+                col += (1 - diff * col + Lit(u)) * smoothstep(0.4,0.4 + _LineWidth , f) * step(f,0.4 + _LineWidth);
                 f = i.uv.x * 0.2 + i.uv.y + 0.5;
-                col += (1 - 2 * col) * smoothstep(0.4,0.4 + _LineWidth , f) * step(f,0.4 + _LineWidth);
-           
+                col += (1 - diff * col + Lit(u)) * smoothstep(0.4,0.4 + _LineWidth , f) * step(f,0.4 + _LineWidth);
 
+         
                 return col;
             }
             ENDHLSL

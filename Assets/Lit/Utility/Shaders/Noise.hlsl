@@ -40,4 +40,9 @@ float perlinNoise(float2 uv , float  pixelsize)
 
 }
 
+float2 pixel(float2 uv, float pixelsize)
+{
+    return floor(uv * pixelsize) / pixelsize;
+}
+
 #endif
