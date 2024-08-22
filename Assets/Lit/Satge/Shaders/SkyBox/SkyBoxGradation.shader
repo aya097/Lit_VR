@@ -3,7 +3,7 @@ Shader "Custom/SkyBox/Gradation"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Slider ("Slider",Range(0,1)) = 0
+        _LightValue ("LightValue",Range(0,1)) = 0
         _Threshold("Threshold",Range(0,1)) = 1
         _ChangeWidth("ChangeWidth",float) = 0.1
         _LineWidth("LineWidth",float) = 1
@@ -38,7 +38,7 @@ Shader "Custom/SkyBox/Gradation"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float _Slider;
+            float _LightValue;
             float _Threshold;
             float _ChangeWidth;
             float _LineWidth;
@@ -58,7 +58,7 @@ Shader "Custom/SkyBox/Gradation"
             {
                 u = frac(u);
                 float time = _Time.y;
-                return smoothstep(frac(time),frac(time + 0.1),u) * step(u,frac(time + 0.1)) * sign(_Threshold - _Slider);
+                return smoothstep(frac(time),frac(time + 0.1),u) * step(u,frac(time + 0.1)) * sign(_Threshold - _LightValue);
             }
 
             float4 frag (v2f i) : SV_Target
@@ -67,8 +67,8 @@ Shader "Custom/SkyBox/Gradation"
                 float u = (i.uv.x + 1) * 0.5;
                 float v = (i.uv.y + 1) * 0.5;
 
-                // Slider の値に応じて色を決定
-                float4 col = smoothstep(_Threshold - _ChangeWidth , _Threshold + _ChangeWidth, _Slider * (1 + _ChangeWidth));
+                // LightValue の値に応じて色を決定
+                float4 col = smoothstep(_Threshold - _ChangeWidth , _Threshold + _ChangeWidth, _LightValue * (1 + _ChangeWidth));
                 col.a = 1.0;
                 
                 // 線を走らせる
