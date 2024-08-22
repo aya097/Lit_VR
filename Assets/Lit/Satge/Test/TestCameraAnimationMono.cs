@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class TestCameraAnimation : MonoBehaviour
+public class TestCameraAnimationMono : MonoBehaviour
 {
     void Start()
     {
