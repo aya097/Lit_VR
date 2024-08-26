@@ -2,8 +2,10 @@ Shader "Custom/Stage/Wall/Hex"
 {
     Properties
     {
-        _Distance("Distance",float) = 1
         _MainTex ("Texture", 2D) = "white" {}
+        _HitRadiuses ("HitRadius", float) = 1
+        _Scale ("Scale",float) = 20
+
     }
     SubShader
     {
@@ -40,9 +42,10 @@ Shader "Custom/Stage/Wall/Hex"
                 float3 positionWS : TEXCOORD1;
             };
 
-            float _Distance;
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float _HitRadius;
+            float _Scale;
 
             v2f vert(appdata v)
             {
@@ -55,17 +58,19 @@ Shader "Custom/Stage/Wall/Hex"
 
             float4 frag(v2f i) : SV_Target
             {
-                float scale = 20;
-                float2 uv = Hex(i.uv, scale);
+                // 六角形を生成
+                float2 uv = Hex(i.uv, _Scale);
+
+                // 縁を強調
                 float hex_alpha = smoothstep(0, 0.03, length(i.uv - uv));
+
+                // カメラとの距離を取得
                 float3 cameraPositionWs = _WorldSpaceCameraPos.xyz;
                 float distance = length(cameraPositionWs - i.positionWS) * 0.5;
-                float r = 1.7;
-                float alpha = smoothstep(0,0.5, 1 - abs(r - distance) * 10);
+                
+                // _HitRadiusに近いところを強調
+                float alpha = smoothstep(0,0.5, 1 - abs(_HitRadius - distance) * 10);
                 alpha = max(0, alpha);
-                // alpha = lerp(alpha, 0, length(i.uv - uv));
-
-
                 
                 float4 col = float4(uv.xy,0,alpha * hex_alpha);
                 return col;
