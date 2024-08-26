@@ -6,7 +6,7 @@ static float r3i = 0.5773503;
 static float2x2 obli_to_rect = float2x2(2, 0, -1, r3i);
 static float2x2 rect_to_obli = float2x2(.5, 0, r3 * .5, r3);
 
-void Hex_float(float2 uv, float scale, out float2 hex_uv)
+float2 Hex(float2 uv, float scale)
 {
     uv = mul(obli_to_rect, uv * scale);
    float2 index = floor(uv);    // 整数部分
@@ -23,5 +23,5 @@ void Hex_float(float2 uv, float scale, out float2 hex_uv)
    index.x += right;
    index.y += upper;
    
-   hex_uv = mul(rect_to_obli, index) / scale;
+   return mul(rect_to_obli, index) / scale;
 }

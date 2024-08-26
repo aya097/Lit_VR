@@ -1,4 +1,4 @@
-Shader "Custom/Bridge/Slope"
+Shader "Custom/Stage/Bridge/Slope"
 {
     Properties
     {
